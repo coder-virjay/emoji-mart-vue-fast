@@ -39,7 +39,11 @@ function add(emoji) {
   store.set('frequently', frequently)
 }
 
-function get(maxNumber) {
+function get(maxNumber, forceUpdate = false) {
+  if (forceUpdate) {
+    frequently = undefined
+    initialized = false
+  }
   if (!initialized) init()
   if (!frequently) {
     defaults = {}

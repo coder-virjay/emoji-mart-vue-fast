@@ -253,6 +253,7 @@ export default {
     onEmojiClick(emoji) {
       this.$emit('select', emoji)
       frequently.add(emoji)
+      this.data.updateRecentCategory()
     },
     onTextSelect($event) {
       // Prevent default text select event.

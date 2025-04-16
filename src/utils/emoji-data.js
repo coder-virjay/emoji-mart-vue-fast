@@ -127,9 +127,9 @@ export class EmojiIndex {
     this._exclude = exclude || null
     // Custom emojis
     this._custom = custom || []
-    // Recent emojis
-    // TODO: make parameter configurable
-    this._recent = recent || frequently.get(recentLength)
+
+    this.recent = recent
+    this.recentLength = recentLength
 
     this._emojis = {}
     this._nativeEmojis = {}
@@ -196,26 +196,7 @@ export class EmojiIndex {
       }
     }
 
-    if (this.isCategoryNeeded('recent')) {
-      if (this._recent.length) {
-        this._recent.map((id) => {
-          for (let customEmoji of this._customCategory.emojis) {
-            if (customEmoji.id === id) {
-              this._recentCategory.emojis.push(customEmoji)
-              return
-            }
-          }
-          if (this.hasEmoji(id)) {
-            this._recentCategory.emojis.push(this.emoji(id))
-          }
-          return
-        })
-      }
-      // Add recent category to the top
-      if (this._recentCategory.emojis.length) {
-        this._categories.unshift(this._recentCategory)
-      }
-    }
+    this.updateRecentCategory()
   }
 
   /**
@@ -457,6 +438,34 @@ export class EmojiIndex {
       return this._emojisFilter(emoji)
     }
     return true
+  }
+
+  // Update the recent category
+  updateRecentCategory() {
+    if (this.isCategoryNeeded('recent')) {
+      const recentEmojis = this.recent || frequently.get(this.recentLength, true)
+      const newRecentEmojis = []
+      if (recentEmojis.length) {
+        recentEmojis.map((id) => {
+          for (let customEmoji of this._customCategory.emojis) {
+            if (customEmoji.id === id) {
+              newRecentEmojis.push(customEmoji)
+              return
+            }
+          }
+          if (this.hasEmoji(id)) {
+            newRecentEmojis.push(this.emoji(id))
+          }
+          return
+        })
+      }
+      // Add recent category to the top
+      const isExistRecentCategory = this._categories.some((category) => category.id === 'recent')
+      if (newRecentEmojis.length && !isExistRecentCategory) {
+        this._categories.unshift(this._recentCategory)
+      }
+      this._recentCategory.emojis = newRecentEmojis
+    }
   }
 }
 
