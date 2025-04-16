@@ -1,5 +1,5 @@
 {
-  "name": "emoji-mart-vue-fast",
+  "name": "emoji-mart-vue-fast-next",
   "version": "15.0.4",
   "description": "Customizable Slack-like emoji picker for VueJS, fast version",
   "main": "dist/emoji-mart.js",

@@ -2,14 +2,7 @@
 
 [![codecov](https://codecov.io/gh/serebrov/emoji-mart-vue/branch/master/graph/badge.svg)](https://codecov.io/gh/serebrov/emoji-mart-vue)
 
-This project is a fork of https://github.com/jm-david/emoji-mart-vue with many performance fixes, tests and structural code changes.
-See the [changelog](#changelog) for details.
-
-The original component was [very slow to show/destroy](https://github.com/jm-david/emoji-mart-vue/pull/47), around 2 seconds to show and even a bit longer to destroy, so it was unusable in a popup.
-
-This was the reason to fork and change it, the demo is [here](https://serebrov.github.io/emoji-mart-vue/), use the "Show / hide the picker" button to see create/destroy performance
-
-> The original project has been forked from [emoji-mart](https://www.npmjs.com/package/emoji-mart) which was written for React.
+This project is a fork of https://github.com/serebrov/emoji-mart-vue, added real-time update feature for "Recently Used" emoticon category..
 
 <div align="center">
   <br><b>Emoji Mart (Vue)</b> is a Slack-like customizable<br>emoji picker component for VueJS
@@ -24,7 +17,7 @@ Demo application code is [under the ./docs folder](./docs).
 
 # Installation
 
-Install from npm: `npm install --save emoji-mart-vue-fast`.
+Install from npm: `npm install --save emoji-mart-vue-fast-next`.
 
 It is also possible to install directly from github (could be useful for forks): `npm install --save serebrov/emoji-mart-vue#5.4.9.`
 
@@ -56,14 +49,14 @@ See also: [#88](https://github.com/serebrov/emoji-mart-vue/issues/88).
 <script>
 // Import data/twitter.json to reduce size, all.json contains data for
 // all emoji sets.
-import data from "emoji-mart-vue-fast/data/all.json";
+import data from "emoji-mart-vue-fast-next/data/all.json";
 // Import default CSS
-import "emoji-mart-vue-fast/css/emoji-mart.css";
+import "emoji-mart-vue-fast-next/css/emoji-mart.css";
 
 // Vue 2:
-import { Picker, EmojiIndex } from "emoji-mart-vue-fast";
+import { Picker, EmojiIndex } from "emoji-mart-vue-fast-next";
 // Vue 3, import components from `/src`:
-import { Picker, EmojiIndex } from "emoji-mart-vue-fast/src";
+import { Picker, EmojiIndex } from "emoji-mart-vue-fast-next/src";
 
 // Create emoji data index.
 // We can change it (for example, filter by category) before passing to the component.
@@ -100,6 +93,7 @@ export default {
 
 Major changes comparing to the original emoji-mart-vue:
 
+- [2025-04-16, v15] Added real-time update feature for "Recently Used" emoticon category.
 - [2023-06-11, v15] Updated to emojis v15, thanks [@susnux](https://github.com/susnux)
 - [2022-07-12, v11] Updated to emojis v14, thanks [@Hysterelius](https://github.com/Hysterelius)!
 - [2021-04-17, v10] Accessibility properties and keyboard controls
@@ -122,36 +116,39 @@ Breaking change in v6: removed `Emoji` and `Picker` [wrappers](#convenience-wrap
 See the `Convenience Wrappers` section below for details.
 
 Breaking change in v7: switched to Unicode v12 emoji set which results in several breaking changes:
+
 - Removed 'emojione' set (removed from [emoji-datasource](https://github.com/iamcal/emoji-data) by [JoyPixels request](https://github.com/iamcal/emoji-data/blob/master/CHANGES.md#2018-07-05--v410))
 - Removed 'messenger' set - it was [merged](https://github.com/iamcal/emoji-data/blob/master/CHANGES.md#2020-01-10--v500) into 'facebook' set
 - Changed emoji categories: removed 'Smileys & People', added 'Smileys & Emotions' and 'People & Body' instead
 
 Breaking change in v8:
+
 - The `StaticPicker` component is now default (exported as `Picker`), previous default component renamed to `VirtualScrollPicker`
 
 Breaking change in v12:
+
 - The `VirtualScrollPicker` was removed, see [#236](https://github.com/serebrov/emoji-mart-vue/issues/236).
 
 # Original Readme
 
 ## Not opinionated
 
-**Emoji Mart** doesn’t automatically insert anything into a text input, nor does it show or hide itself. It simply returns an `emoji` object. It’s up to the developer to mount/unmount (it’s fast!) and position the picker. You can use the returned object as props for the `EmojiMart.Emoji` component. You could also use `emoji.colons` to insert text into a textarea or `emoji.native` to use the emoji.
+**Emoji Mart** doesn't automatically insert anything into a text input, nor does it show or hide itself. It simply returns an `emoji` object. It's up to the developer to mount/unmount (it's fast!) and position the picker. You can use the returned object as props for the `EmojiMart.Emoji` component. You could also use `emoji.colons` to insert text into a textarea or `emoji.native` to use the emoji.
 
 ## Components
 
 ### Picker
 
 ```js
-import data from 'emoji-mart-vue-fast/data/all.json'
-import { Picker, EmojiIndex } from 'emoji-mart-vue-fast'
+import data from 'emoji-mart-vue-fast-next/data/all.json'
+import { Picker, EmojiIndex } from 'emoji-mart-vue-fast-next'
 let emojiIndex = new EmojiIndex(data)
 ```
 
 Import CSS with default styles:
 
 ```js
-import 'emoji-mart-vue-fast/css/emoji-mart.css'
+import 'emoji-mart-vue-fast-next/css/emoji-mart.css'
 ```
 
 Note: to have a custom look for the picker, either use own css file without including the standard one or add custom styles on top of standard.
@@ -161,7 +158,7 @@ Note: CSS also includes background images for image-based emoji sets (apple, goo
 ```css
 /* load twitter sheet from own server */
 .emoji-mart-body .emoji-type-image.emoji-set-twitter {
-	background-image: url(/img/twitter-5.0.1-sheets-256-64.png);
+  background-image: url(/img/twitter-5.0.1-sheets-256-64.png);
 }
 ```
 
@@ -171,32 +168,36 @@ Add the `<picker>` component to your template:
 <picker :data="emojiIndex" set="twitter" />
 <picker :data="emojiIndex" @select="addEmoji" />
 <picker :data="emojiIndex" title="Pick your emoji…" emoji="point_up" />
-<picker :data="emojiIndex" :style="{ position: 'absolute', bottom: '20px', right: '20px' }" />
-<picker :data="emojiIndex" 
-	:i18n="{ search: 'Recherche', categories: { search: 'Résultats de recherche', recent: 'Récents' } }"
+<picker
+  :data="emojiIndex"
+  :style="{ position: 'absolute', bottom: '20px', right: '20px' }"
+/>
+<picker
+  :data="emojiIndex"
+  :i18n="{ search: 'Recherche', categories: { search: 'Résultats de recherche', recent: 'Récents' } }"
 />
 ```
 
-| Prop               | Required | Default            | Description                                                                                          |
-| ------------------ | :------: | ------------------ | ---------------------------------------------------------------------------------------------------- |
-| **autoFocus**      |          | `false`            | Auto focus the search input when mounted                                                             |
-| **color**          |          | `#ae65c5`          | The top bar anchors select and hover color                                                           |
-| **emoji**          |          | `department_store` | The emoji shown when no emojis are hovered, set to an empty string to show nothing                   |
+| Prop               | Required | Default            | Description                                                                                                                                                |
+| ------------------ | :------: | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **autoFocus**      |          | `false`            | Auto focus the search input when mounted                                                                                                                   |
+| **color**          |          | `#ae65c5`          | The top bar anchors select and hover color                                                                                                                 |
+| **emoji**          |          | `department_store` | The emoji shown when no emojis are hovered, set to an empty string to show nothing                                                                         |
 | **emojiSize**      |          | `24`               | The emoji width and height; affects font size for native emoji (it is 80% of emojiSize); also the picker width is cacluated dynamically based on emojiSize |
-| **perLine**        |          | `9`                | Number of emojis per line. While there’s no minimum or maximum, this will affect the picker’s width. |
-| **i18n**           |          | [`{…}`](#i18n)     | [An object](#i18n) containing localized strings                                                      |
-| **native**         |          | `false`            | Renders the native unicode emoji                                                                     |
-| **set**            |          | `apple`            | The emoji set: `'apple', 'google', 'twitter', 'facebook'`                   |
-| **showPreview**    |          | `true`             | Display preview section                                                                              |
-| **showSearch**     |          | `true`             | Display search section                                                                               |
-| **showCategories** |          | `true`             | Display categories                                                                                   |
-| **showSkinTones**  |          | `true`             | Display skin tones picker                                                                            |
-| **emojiTooltip**   |          | `false`            | Show emojis short name when hovering (title)                                                         |
-| **skin**           |          |                    | Forces skin color: `1, 2, 3, 4, 5, 6`                                                                |
-| **defaultSkin**    |          | `1`                | Default skin color: `1, 2, 3, 4, 5, 6`                                                               |
-| **pickerStyles**   |          |                    | Inline styles applied to the root element. Useful for positioning                                    |
-| **title**          |          | `Emoji Mart™`      | The title shown when no emojis are hovered                                                           |
-| **infiniteScroll** |          | `true`             | Scroll continuously through the categories                                                           |
+| **perLine**        |          | `9`                | Number of emojis per line. While there's no minimum or maximum, this will affect the picker's width.                                                       |
+| **i18n**           |          | [`{…}`](#i18n)     | [An object](#i18n) containing localized strings                                                                                                            |
+| **native**         |          | `false`            | Renders the native unicode emoji                                                                                                                           |
+| **set**            |          | `apple`            | The emoji set: `'apple', 'google', 'twitter', 'facebook'`                                                                                                  |
+| **showPreview**    |          | `true`             | Display preview section                                                                                                                                    |
+| **showSearch**     |          | `true`             | Display search section                                                                                                                                     |
+| **showCategories** |          | `true`             | Display categories                                                                                                                                         |
+| **showSkinTones**  |          | `true`             | Display skin tones picker                                                                                                                                  |
+| **emojiTooltip**   |          | `false`            | Show emojis short name when hovering (title)                                                                                                               |
+| **skin**           |          |                    | Forces skin color: `1, 2, 3, 4, 5, 6`                                                                                                                      |
+| **defaultSkin**    |          | `1`                | Default skin color: `1, 2, 3, 4, 5, 6`                                                                                                                     |
+| **pickerStyles**   |          |                    | Inline styles applied to the root element. Useful for positioning                                                                                          |
+| **title**          |          | `Emoji Mart™`      | The title shown when no emojis are hovered                                                                                                                 |
+| **infiniteScroll** |          | `true`             | Scroll continuously through the categories                                                                                                                 |
 
 | Event           | Description             |
 | --------------- | ----------------------- |
@@ -295,8 +296,8 @@ The replacement can be done like this (using the [emoji-regex](https://www.npmjs
 // npm install emoji-regex
 import emojiRegex from 'emoji-regex'
 
-import data from 'emoji-mart-vue-fast/data/all.json'
-import { EmojiIndex } from 'emoji-mart-vue-fast'
+import data from 'emoji-mart-vue-fast-next/data/all.json'
+import { EmojiIndex } from 'emoji-mart-vue-fast-next'
 
 const unicodeEmojiRegex = emojiRegex()
 
@@ -322,37 +323,25 @@ export function wrapEmoji(text: string): string {
 
 Here we can use `emojiIndex.nativeEmoji(emoji_char)` to get the emoji object by native emoji and then convert it to the HTML image.
 
-
 #### I18n
 
-The `i18n` property is an object that can be used to localize the picker. It contains the following keys:
-
 ```js
-<script>
-const i18n = {
-  search: 'My Search',
-  notfound: 'My No Emoji Found',
-  categories: {
-    search: 'My Search Results',
-    recent: 'My Frequently Used',
-    smileys: 'My Smileys & Emoticon',
-    people: 'My People & Body',
-    nature: 'My Animals & Nature',
-    foods: 'My Food & Drink',
-    activity: 'My Activity',
-    places: 'My Travel & Places',
-    objects: 'My Objects',
-    symbols: 'My Symbols',
-    flags: 'My Flags',
-    custom: 'My Custom',
-  }
+search: 'Search',
+notfound: 'No Emoji Found',
+categories: {
+  search: 'Search Results',
+  recent: 'Frequently Used',
+  smileys: 'Smileys & Emoticon',
+  people: 'People & Body',
+  nature: 'Animals & Nature',
+  foods: 'Food & Drink',
+  activity: 'Activity',
+  places: 'Travel & Places',
+  objects: 'Objects',
+  symbols: 'Symbols',
+  flags: 'Flags',
+  custom: 'Custom',
 }
-</script>
-
-<template>
-  <Picker :i18n="i18n" />
-</template>
-
 ```
 
 #### Sheet sizes
@@ -360,30 +349,30 @@ const i18n = {
 Sheets are served from [unpkg](https://unpkg.com), a global CDN that serves files published to [npm](https://www.npmjs.com).
 Note: URLs for background images are specified in the [css/emoji-mart.css](css/emoji-mart.css).
 
-| Set       | Size (`sheetSize: 16`) | Size (`sheetSize: 20`) | Size (`sheetSize: 32`) | Size (`sheetSize: 64`) |
-| --------- | ---------------------- | ---------------------- | ---------------------- | ---------------------- |
-| apple     | 334 KB                 | 459 KB                 | 1.08 MB                | 2.94 MB                |
-| facebook  | 322 KB                 | 439 KB                 | 1020 KB                | 2.50 MB                |
-| google    | 301 KB                 | 409 KB                 | 907 KB                 | 2.17 MB                |
-| twitter   | 288 KB                 | 389 KB                 | 839 KB                 | 1.82 MB                |
+| Set      | Size (`sheetSize: 16`) | Size (`sheetSize: 20`) | Size (`sheetSize: 32`) | Size (`sheetSize: 64`) |
+| -------- | ---------------------- | ---------------------- | ---------------------- | ---------------------- |
+| apple    | 334 KB                 | 459 KB                 | 1.08 MB                | 2.94 MB                |
+| facebook | 322 KB                 | 439 KB                 | 1020 KB                | 2.50 MB                |
+| google   | 301 KB                 | 409 KB                 | 907 KB                 | 2.17 MB                |
+| twitter  | 288 KB                 | 389 KB                 | 839 KB                 | 1.82 MB                |
 
 #### Datasets and Custom Emojis
 
 While the default setup assumes `all.json` usage with all sets available, you may want to include only a single set data to reduce the size of your bundle.
 
-| Set       | Size (on disk) |
-| --------- | -------------- |
-| all       | 570 KB         |
-| apple     | 484 KB         |
-| facebook  | 421 KB         |
-| google    | 483 KB         |
-| twitter   | 484 KB         |
+| Set      | Size (on disk) |
+| -------- | -------------- |
+| all      | 570 KB         |
+| apple    | 484 KB         |
+| facebook | 421 KB         |
+| google   | 483 KB         |
+| twitter  | 484 KB         |
 
 To use these data files (or any other custom data), use the `Picker` component like this:
 
 ```js
-import data from 'emoji-mart-vue-fast/data/facebook.json'
-import { Picker, EmojiIndex } from 'emoji-mart-vue-fast'
+import data from 'emoji-mart-vue-fast-next/data/facebook.json'
+import { Picker, EmojiIndex } from 'emoji-mart-vue-fast-next'
 let index = new EmojiIndex(data)
 ```
 
@@ -394,7 +383,7 @@ let index = new EmojiIndex(data)
 Using `EmojiIndex`, it is also possible to control which emojis data is included or excluded via constructor parameters:
 
 | Param                  | Default | Description                                                                                                                                                     |
-| ---------------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ---------------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
 | **include**            | `[]`    | Only load included categories. Accepts [I18n categories keys](#i18n). Order will be respected, except for the `recent` category which will always be the first. |
 | **exclude**            | `[]`    | Don't load excluded categories. Accepts [I18n categories keys](#i18n).                                                                                          |
 | **custom**             | `[]`    | [Custom emojis](#custom-emojis)                                                                                                                                 |
@@ -409,33 +398,33 @@ Avaiable categories are: `people,` `nature,` `foods,` `activity,` `places,` `obj
 For example:
 
 ```js
-import data from 'emoji-mart-vue-fast/data/facebook.json'
-import { Picker, EmojiIndex } from 'emoji-mart-vue-fast'
+import data from 'emoji-mart-vue-fast-next/data/facebook.json'
+import { Picker, EmojiIndex } from 'emoji-mart-vue-fast-next'
 
-let emojisToShowFilter = function(emoji) {
-	// check the emoji properties, see the examples of emoji object below
-	return true // return true to include or false to exclude
+let emojisToShowFilter = function (emoji) {
+  // check the emoji properties, see the examples of emoji object below
+  return true // return true to include or false to exclude
 }
 let include = ['people', 'nature']
 // or exclude:
 // let exclude = ['flags']
 
 const custom = [
-	{
-		name: 'Octocat',
-		short_names: ['octocat'],
-		text: '',
-		emoticons: [],
-		keywords: ['github'],
-		imageUrl: 'https://assets-cdn.github.com/images/icons/emoji/octocat.png?v7',
-	},
+  {
+    name: 'Octocat',
+    short_names: ['octocat'],
+    text: '',
+    emoticons: [],
+    keywords: ['github'],
+    imageUrl: 'https://assets-cdn.github.com/images/icons/emoji/octocat.png?v7',
+  },
 ]
 
 let index = new EmojiIndex(data, {
-	emojisToShowFilter,
-	include,
-	exclude,
-	custom,
+  emojisToShowFilter,
+  include,
+  exclude,
+  custom,
 })
 ```
 
@@ -484,8 +473,8 @@ The selection is confirm with enter, which will emit the `selected` event (same 
 ### Emoji
 
 ```js
-import data from 'emoji-mart-vue-fast/data/all.json'
-import { Emoji, EmojiIndex } from 'emoji-mart-vue-fast'
+import data from 'emoji-mart-vue-fast-next/data/all.json'
+import { Emoji, EmojiIndex } from 'emoji-mart-vue-fast-next'
 ```
 
 ```html
@@ -494,18 +483,17 @@ import { Emoji, EmojiIndex } from 'emoji-mart-vue-fast'
 <emoji :data="index" :emoji="santaEmojiObject" :size="32" />
 
 <script>
-import data from 'emoji-mart-vue-fast/data/all.json'
-let index = new EmojiIndex(data)
+  import data from 'emoji-mart-vue-fast-next/data/all.json'
+  let index = new EmojiIndex(data)
 
-export default {
-  computed: {
-    santaEmojiObject() {
-      return index.findEmoji(':santa:')
+  export default {
+    computed: {
+      santaEmojiObject() {
+        return index.findEmoji(':santa:')
+      },
     },
-  },
-}
+  }
 </script>
-
 ```
 
 | Prop                                         | Required | Default                                                                                              | Description                                                                                                        |
@@ -529,13 +517,13 @@ export default {
 
 #### Unsupported emojis fallback
 
-Certain sets don’t support all emojis (i.e. Facebook don’t support `:shrug:`). By default the Emoji component will not render anything so that the emojis’ don’t take space in the picker when not available. When using the standalone Emoji component, you can however render anything you want by providing the `fallback` props.
+Certain sets don't support all emojis (i.e. Facebook don't support `:shrug:`). By default the Emoji component will not render anything so that the emojis' don't take space in the picker when not available. When using the standalone Emoji component, you can however render anything you want by providing the `fallback` props.
 
 To have the component render `:shrug:` you would need to:
 
 ```js
 function emojiFallback(emoji) {
-	return `:${emoji.short_names[0]}:`
+  return `:${emoji.short_names[0]}:`
 }
 ```
 
@@ -545,11 +533,11 @@ function emojiFallback(emoji) {
 
 ## Headless search
 
-The `Picker` doesn’t have to be mounted for you to take advantage of the advanced search results.
+The `Picker` doesn't have to be mounted for you to take advantage of the advanced search results.
 
 ```js
-import { EmojiIndex } from 'emoji-mart-vue-fast'
-import data from 'emoji-mart-vue-fast/data/all.json'
+import { EmojiIndex } from 'emoji-mart-vue-fast-next'
+import data from 'emoji-mart-vue-fast-next/data/all.json'
 
 const emojiIndex = new EmojiIndex(data)
 emojiIndex.search('christmas').map((o) => o.native)
@@ -559,8 +547,8 @@ emojiIndex.search('christmas').map((o) => o.native)
 ### With custom data
 
 ```js
-import data from 'emoji-mart-vue-fast/data/facebook'
-import { EmojiIndex } from 'emoji-mart-vue-fast'
+import data from 'emoji-mart-vue-fast-next/data/facebook'
+import { EmojiIndex } from 'emoji-mart-vue-fast-next'
 
 let emojiIndex = new EmojiIndex(data)
 emojiIndex.search('christmas')
@@ -571,16 +559,16 @@ emojiIndex.search('christmas')
 By default EmojiMart will store user chosen skin and frequently used emojis in `localStorage`. That can however be overwritten should you want to store these in your own storage.
 
 ```js
-import { store } from 'emoji-mart-vue-fast'
+import { store } from 'emoji-mart-vue-fast-next'
 
 store.setHandlers({
-	getter: (key) => {
-		// Get from your own storage (sync)
-	},
+  getter: (key) => {
+    // Get from your own storage (sync)
+  },
 
-	setter: (key, value) => {
-		// Persist in your own storage (can be async)
-	},
+  setter: (key, value) => {
+    // Persist in your own storage (can be async)
+  },
 })
 ```
 
@@ -590,7 +578,7 @@ Possible keys are:
 | ---------- | -------------------------------- | --------------------------------------------------------------------------------------------------------------- |
 | skin       | `1, 2, 3, 4, 5, 6`               |                                                                                                                 |
 | frequently | `{ 'astonished': 11, '+1': 22 }` | An object where the key is the emoji name and the value is the usage count                                      |
-| last       | 'astonished'                     | (Optional) Used by `frequently` to be sure the latest clicked emoji will always appear in the “Recent” category |
+| last       | 'astonished'                     | (Optional) Used by `frequently` to be sure the latest clicked emoji will always appear in the "Recent" category |
 
 ## Features
 
@@ -598,7 +586,7 @@ Possible keys are:
 
 #### Short name, name and keywords
 
-Not only does **Emoji Mart** return more results than most emoji picker, they’re more accurate and sorted by relevance.
+Not only does **Emoji Mart** return more results than most emoji picker, they're more accurate and sorted by relevance.
 
 <img width="338" alt="summer" src="https://user-images.githubusercontent.com/436043/32532567-179f1be4-c400-11e7-885e-df6e9b52c665.png">
 
@@ -634,6 +622,10 @@ It can however be overwritten as per user preference.
 
 <img width="98" alt="customizable-skin" src="https://user-images.githubusercontent.com/436043/32532883-2c620e7c-c402-11e7-976c-50d32be0566c.png">
 
+#### 实时更新最近使用表情 (Real-time Updates for Recently Used Emojis)
+
+现在，当用户选择一个表情符号时，"最近使用"类别会立即更新，无需重新加载或重新打开选择器。
+
 #### Multiple sets supported
 
 Apple / Google / Twitter / Facebook
@@ -651,11 +643,11 @@ Picker component wrapper with default settings:
 
 ```javascript
 <script>
-import data from 'emoji-mart-vue-fast/data/all.json'
-import { EmojiIndex } from 'emoji-mart-vue-fast/src/utils/emoji-data'
-import EmojiMartPicker from 'emoji-mart-vue-fast/src/components/Picker'
+import data from 'emoji-mart-vue-fast-next/data/all.json'
+import { EmojiIndex } from 'emoji-mart-vue-fast-next/src/utils/emoji-data'
+import EmojiMartPicker from 'emoji-mart-vue-fast-next/src/components/Picker'
 
-import { PickerProps } from 'emoji-mart-vue-fast/src/utils/shared-props'
+import { PickerProps } from 'emoji-mart-vue-fast-next/src/utils/shared-props'
 
 let index = new EmojiIndex(data)
 
@@ -683,11 +675,11 @@ Emoji component wrapper with default settings:
 
 ```javascript
 <script>
-import data from 'emoji-mart-vue-fast/data/all.json'
-import { EmojiIndex } from 'emoji-mart-vue-fast/src/utils/emoji-data'
-import EmojiMartEmoji from 'emoji-mart-vue-fast/src/components/Emoji'
+import data from 'emoji-mart-vue-fast-next/data/all.json'
+import { EmojiIndex } from 'emoji-mart-vue-fast-next/src/utils/emoji-data'
+import EmojiMartEmoji from 'emoji-mart-vue-fast-next/src/components/Emoji'
 
-import { EmojiProps } from 'emoji-mart-vue-fast/src/utils/shared-props'
+import { EmojiProps } from 'emoji-mart-vue-fast-next/src/utils/shared-props'
 
 export default {
   functional: true,
@@ -793,5 +785,5 @@ Original react emoji picker: [missive/emoji-mart](https://github.com/missive/emo
 Vue port: [jm-david/emoji-mart-vue](https://github.com/jm-david/emoji-mart-vue)
 
 Powered by [iamcal/emoji-data](https://github.com/iamcal/emoji-data) and inspired by [iamcal/js-emoji](https://github.com/iamcal/js-emoji).<br>
-🙌🏼  [Cal Henderson](https://github.com/iamcal).
+🙌🏼  [Cal Henderson](https://github.com/iamcal).
 ```
