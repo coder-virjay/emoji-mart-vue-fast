@@ -443,7 +443,7 @@ export class EmojiIndex {
   // Update the recent category
   updateRecentCategory() {
     if (this.isCategoryNeeded('recent')) {
-      const recentEmojis = this.recent || frequently.get(this.recentLength)
+      const recentEmojis = this.recent || frequently.get(this.recentLength, true)
       const newRecentEmojis = []
       if (recentEmojis.length) {
         recentEmojis.map((id) => {
@@ -460,7 +460,8 @@ export class EmojiIndex {
         })
       }
       // Add recent category to the top
-      if (newRecentEmojis.length) {
+      const isExistRecentCategory = this._categories.some((category) => category.id === 'recent')
+      if (newRecentEmojis.length && !isExistRecentCategory) {
         this._categories.unshift(this._recentCategory)
       }
       this._recentCategory.emojis = newRecentEmojis
